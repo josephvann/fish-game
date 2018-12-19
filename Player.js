@@ -18,7 +18,7 @@ class Player {
         this.dead = false;
         this.radius = 10;
         this.isPlayer = true;
-        this.attractionRadius = window.innerWidth;
+        this.attractionRadius = window.innerWidth/6;
         this.biteCount = 0;
         this.maxBiteCount = 10;
         this.visible = true;

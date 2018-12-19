@@ -19,14 +19,14 @@ function checkNeighbours(fish) {
                                     if(!scattering) {
                                         if(!fish[i].midUTurn) {
                                             if(fish[i].scavenging) {
-                                                fish[i].angle += ((fish[j].angle - fish[i].angle) / 800);
+                                                fish[i].angle += ((fish[j].angle - fish[i].angle) / 300);
                                             } else {
                                                 fish[i].angle += ((fish[j].angle - fish[i].angle) / 200);
                                             }
                                         }
                                         if(!fish[j].midUTurn) {
                                             if(fish[i].scavenging) {
-                                                fish[j].angle += ((fish[j].angle - fish[i].angle) / 800);
+                                                fish[j].angle += ((fish[j].angle - fish[i].angle) / 300);
                                             } else {
                                                 fish[j].angle += ((fish[j].angle - fish[i].angle) / 200);
                                             }
@@ -44,7 +44,6 @@ function checkNeighbours(fish) {
 
 function scavenge(fish, food, bullets) {
     for(j = 0; j < fish.length; j++) {
-
         for(i = 0; i < bullets.length; i++) {
             collided = false;
             if(dist(fish[j].position.x, fish[j].position.y, bullets[i].position.x, bullets[i].position.y) < bullets[i].radius + 2) {
@@ -81,7 +80,7 @@ function scavenge(fish, food, bullets) {
             var clipPoint = { x: fish[j].position.x + clipDirection.x, y: fish[j].position.y + clipDirection.y};
 
             if(!collided && dist(clipPoint.x, clipPoint.y, bullets[i].position.x, bullets[i].position.y) < bullets[i].radius + 8*fish[j].sizeFactor) {
-                if(!fish[j].dead) {
+                if(!fish[j].dead && !player1.dead) {
                     fishKilled ++;
                     score += 500;
                     player1.maxBullets += 1;
@@ -95,27 +94,55 @@ function scavenge(fish, food, bullets) {
             }
         }
 
+        for(i = 0; i < food.length; i++) {
+            fishPos = createVector(fish[j].position.x,fish[j].position.y);
+            foodPos = createVector(food[i].position.x,food[i].position.y);
+            currentDistance = dist(fishPos.x, fishPos.y, foodPos.x, foodPos.y);
+            if(food[i].exploding && currentDistance < food[i].radius) {
+                if(!fish[j].dead && !player1.dead) {
+                    fishKilled ++;
+                    score += 500;
+                    level += 0.01;
+                }
+                fish[j].dead = true;
+                collided = true;
+            }
+            if(food[i].spawnedByPlayer && currentDistance < food[i].radius) {
+                if(!fish[j].dead && !player1.dead) {
+                    fishKilled ++;
+                    score += 500;
+                    level += 0.01;
+                }    
+            }
+        }
+
         if(fish[j].visible){
             fishPos = createVector(fish[j].position.x,fish[j].position.y);
             playerPos = createVector(player1.position.x,player1.position.y);
             currentDistance = dist(fishPos.x, fishPos.y, playerPos.x, playerPos.y);
 
-            if(currentDistance < player1.attractionRadius && currentDistance < fish[j].nearestFoodDist && player1.visible && !fish[j].dead){            
-                diff = p5.Vector.sub(fishPos, playerPos);
-                desiredAngle = diff.heading() - TWO_PI/4;
+            if(player1.visible && !fish[j].dead){            
+                diff = p5.Vector.sub(playerPos, fishPos);
+                desiredAngle = diff.heading() - TWO_PI*3/4;
+
+                if(desiredAngle < -PI) {
+                    desiredAngle += TWO_PI;
+                }
+                if(desiredAngle > PI) {
+                    desiredAngle -= TWO_PI;
+                }
+
                 fish[j].nearestFoodDist = currentDistance;
 
-                if((fish[j].angle + PI/2) % TWO_PI < (desiredAngle % TWO_PI) + PI/2) {
-                    fish[j].angle += 0.06;
-                }
-                if(fish[j].angle % TWO_PI > desiredAngle % TWO_PI) {
-                    fish[j].angle -= 0.06;
-                }
+
+                fish[j].angle = desiredAngle;
+
                 fish[j].scavenging = true;
             }
             
             if(currentDistance < player1.attractionRadius/4 && !player1.dead && !fish[j].dead) {
                 score++;
+                level+= 0.00001;
             }
             if(currentDistance < 5*player1.sizeFactor + 1 && !fish[j].dead) {
                 player1.dead = true;

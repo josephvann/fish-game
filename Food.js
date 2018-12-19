@@ -10,7 +10,7 @@ class Food {
         this.willExplode = false;
         this.exploding = false;
         this.originalRadius = this.radius;
-        this.explosionRadius = 160;
+        this.explosionRadius = 100;
         this.explodeDelay = 40;
         this.explodeDecay = 5;
         this.originalExplodeDelay = this.explodeDelay;
@@ -57,7 +57,7 @@ class Food {
         if(this.exploding) {
             this.explodeDecay -= 1;
             this.fill = color(0, 0, 100, 20*this.explodeDecay/5);
-            this.radius = this.originalRadius + ((5 - this.explodeDecay)/5) * this.explosionRadius * 1.5;
+            this.radius = this.explosionRadius;
         }
         if(this.explodeDecay < 0) {
             food.splice(this.index, 1);

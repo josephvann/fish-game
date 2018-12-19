@@ -23,7 +23,7 @@ class Fish {
         this.position = {x: 500, y: 500};
         this.angle = random(0,628)/100;
         this.deltaPos = {x: 0, y: -1};
-        this.baseSpeed = random(15,25)/20;
+        this.baseSpeed = random(15,25)/16;
         this.speed = this.baseSpeed
         this.hue = random(0,100);
         this.starvationThreshold = random(1500, 3000);
@@ -119,6 +119,7 @@ class Fish {
     }
 
     update() {
+        this.speed += 0.00001;
         // find deltapos from angle and speed
         if(!this.dead) {
             this.deltaPos.x = this.speed * sin(this.angle);

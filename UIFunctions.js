@@ -115,7 +115,7 @@ function drawProgress() {
     text("Level", window.innerWidth/2, window.innerHeight - 38);
     textSize(32);
     fill(white);
-    var displayProgress = int(level);
+    var displayProgress = int(level*1000)/1000;
     text(displayProgress, window.innerWidth/2, window.innerHeight-10);    
 }
 function drawDeadScreen() {
